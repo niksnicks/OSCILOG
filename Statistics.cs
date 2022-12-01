@@ -12,7 +12,6 @@ namespace Oscilog
         public double average;
         public double variance;
         public double stdDeviation;
-        public double WeightedAverage;
 
         public List<List<string>> ToStrings()
         {
@@ -21,15 +20,12 @@ namespace Oscilog
             keys.Add("Среднее значение");
             keys.Add("Дисперсия");
             keys.Add("Стандартное отклонение");
-            keys.Add("Взвешенное среднее");
 
             var vals = new List<string>();
             vals.Add(median.ToString());
             vals.Add(average.ToString());
             vals.Add(variance.ToString());
             vals.Add(stdDeviation.ToString());
-            vals.Add(WeightedAverage.ToString());
-           
 
             var result = new List<List<string>>();
             result.Add(keys);
@@ -47,7 +43,6 @@ namespace Oscilog
             result.average = Average(values);
             result.variance = Variance(values);
             result.stdDeviation = CalculateStandardDeviation(values);
-            result.WeightedAverage = Average(values);
             return result;
         }
 
@@ -120,39 +115,6 @@ namespace Oscilog
                 }
                 return variance / values.Count;
             }
-
-            // Взвешенное среднее
-            
-            public static double WeightedAverage<T>(this IEnumerable<T> records, Func<T, double> value, Func<T, double> weight)
-            {
-                if (records == null)
-                    throw new ArgumentNullException(nameof(records), $"{nameof(records)} is null.");
-
-                int count = 0;
-                double valueSum = 0;
-                double weightSum = 0;
-
-                foreach (var record in records)
-                {
-                    count++;
-                    double recordWeight = weight(record);
-
-                    valueSum += value(record) * recordWeight;
-                    weightSum += recordWeight;
-                }
-
-                if (count == 0)
-                    throw new ArgumentException($"{nameof(records)} is empty.");
-
-                if (count == 1)
-                    return value(records.Single());
-
-                if (weightSum != 0)
-                    return valueSum / weightSum;
-                else
-                    throw new DivideByZeroException($"Division of {valueSum} by zero.");
-            }
         }
-
     }
 }
